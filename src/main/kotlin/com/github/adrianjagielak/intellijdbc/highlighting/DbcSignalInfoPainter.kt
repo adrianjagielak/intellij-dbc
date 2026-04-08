@@ -77,15 +77,13 @@ class DbcSignalInfoPainter : EditorLinePainter() {
             sb.append(" ").append(truncated)
         }
 
-        // Values: show as {IDLE, PREPARE, ENCRYPT_BEGIN, ...} — names only, no numeric keys
+        // Values: 0=IDLE, 1=PREPARE, 2=ENCRYPT_BEGIN, ...
         if (valueDescs != null && valueDescs.isNotEmpty()) {
-            if (comment != null) sb.append("  ")
-            sb.append("{")
-            val maxShow = 5
-            val names = valueDescs.map { it.second }
-            sb.append(names.take(maxShow).joinToString(", "))
-            if (names.size > maxShow) sb.append(", ...")
-            sb.append("}")
+            if (comment != null) sb.append(" |")
+            sb.append(" ")
+            val valStr = valueDescs.joinToString(", ") { "${it.first}=${it.second}" }
+            val truncated = if (valStr.length > 100) valStr.substring(0, 97) + "..." else valStr
+            sb.append(truncated)
         }
 
         val text = sb.toString()
