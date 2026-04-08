@@ -32,8 +32,26 @@ DBC files define CAN (Controller Area Network) bus communication databases. They
 
 ## Building
 
+### Prerequisites
+
+You need a JDK 21+ installed. On macOS, the easiest way is via Homebrew:
+
 ```bash
+brew install temurin
+```
+
+On other platforms, install any JDK 21+ distribution (e.g., [Eclipse Temurin](https://adoptium.net/)).
+
+### Build the plugin
+
+```bash
+git clone https://github.com/adrianjagielak/intellij-dbc.git
+cd intellij-dbc
 ./gradlew buildPlugin
 ```
 
-The plugin ZIP will be in `build/distributions/`.
+The plugin ZIP will be at `build/distributions/intellij-dbc-1.0.0.zip`.
+
+### Install in your IDE
+
+**Settings > Plugins > gear icon > Install Plugin from Disk...** and select the built ZIP file.
