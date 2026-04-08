@@ -34,13 +34,13 @@ DBC files define CAN (Controller Area Network) bus communication databases. They
 
 ### Prerequisites
 
-You need a JDK installed. On macOS, the easiest way is via Homebrew:
+You need **JDK 21** installed. On macOS:
 
 ```bash
-brew install temurin
+brew install temurin@21
 ```
 
-On other platforms, install any JDK 21+ distribution (e.g., [Eclipse Temurin](https://adoptium.net/)).
+On other platforms, install JDK 21 from [Eclipse Temurin](https://adoptium.net/).
 
 ### Build the plugin
 
