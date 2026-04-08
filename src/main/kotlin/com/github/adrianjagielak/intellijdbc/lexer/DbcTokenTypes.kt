@@ -58,6 +58,20 @@ object DbcTokenTypes {
     @JvmField val ENVVAR_DATA_ = DbcTokenType("ENVVAR_DATA_")
     @JvmField val SGTYPE_VAL_ = DbcTokenType("SGTYPE_VAL_")
 
+    // Less common keywords (used in NS_ section and rare constructs)
+    @JvmField val NS_DESC_ = DbcTokenType("NS_DESC_")
+    @JvmField val CAT_DEF_ = DbcTokenType("CAT_DEF_")
+    @JvmField val CAT_ = DbcTokenType("CAT_")
+    @JvmField val FILTER = DbcTokenType("FILTER")
+    @JvmField val EV_DATA_ = DbcTokenType("EV_DATA_")
+    @JvmField val SIGTYPE_VALTYPE_ = DbcTokenType("SIGTYPE_VALTYPE_")
+    @JvmField val BA_DEF_DEF_REL_ = DbcTokenType("BA_DEF_DEF_REL_")
+    @JvmField val BA_DEF_SGTYPE_ = DbcTokenType("BA_DEF_SGTYPE_")
+    @JvmField val BA_SGTYPE_REL_ = DbcTokenType("BA_SGTYPE_REL_")
+    @JvmField val BU_SG_REL_ = DbcTokenType("BU_SG_REL_")
+    @JvmField val BU_EV_REL_ = DbcTokenType("BU_EV_REL_")
+    @JvmField val BU_BO_REL_ = DbcTokenType("BU_BO_REL_")
+
     // Special keyword-like tokens used in attribute definitions
     @JvmField val INT_KEYWORD = DbcTokenType("INT_KEYWORD")
     @JvmField val FLOAT_KEYWORD = DbcTokenType("FLOAT_KEYWORD")
@@ -78,6 +92,9 @@ object DbcTokenTypes {
         SIG_GROUP_, BO_TX_BU_, EV_, SG_MUL_VAL_,
         SGTYPE_, SIG_TYPE_REF_, BA_REL_, BA_DEF_REL_,
         BA_SGTYPE_, SIG_VALTYPE_, ENVVAR_DATA_, SGTYPE_VAL_,
+        NS_DESC_, CAT_DEF_, CAT_, FILTER, EV_DATA_,
+        SIGTYPE_VALTYPE_, BA_DEF_DEF_REL_, BA_DEF_SGTYPE_,
+        BA_SGTYPE_REL_, BU_SG_REL_, BU_EV_REL_, BU_BO_REL_,
         INT_KEYWORD, FLOAT_KEYWORD, STRING_KEYWORD, HEX_KEYWORD, ENUM_KEYWORD
     )
 
@@ -114,6 +131,18 @@ object DbcTokenTypes {
         "SGTYPE_VAL_" to SGTYPE_VAL_,
         "SGTYPE_" to SGTYPE_,
         "ENVVAR_DATA_" to ENVVAR_DATA_,
+        "NS_DESC_" to NS_DESC_,
+        "CAT_DEF_" to CAT_DEF_,
+        "CAT_" to CAT_,
+        "FILTER" to FILTER,
+        "EV_DATA_" to EV_DATA_,
+        "SIGTYPE_VALTYPE_" to SIGTYPE_VALTYPE_,
+        "BA_DEF_DEF_REL_" to BA_DEF_DEF_REL_,
+        "BA_DEF_SGTYPE_" to BA_DEF_SGTYPE_,
+        "BA_SGTYPE_REL_" to BA_SGTYPE_REL_,
+        "BU_SG_REL_" to BU_SG_REL_,
+        "BU_EV_REL_" to BU_EV_REL_,
+        "BU_BO_REL_" to BU_BO_REL_,
         "INT" to INT_KEYWORD,
         "FLOAT" to FLOAT_KEYWORD,
         "STRING" to STRING_KEYWORD,

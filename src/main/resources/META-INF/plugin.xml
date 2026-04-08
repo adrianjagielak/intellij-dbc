@@ -110,6 +110,10 @@
                 language="DBC"
                 implementationClass="com.github.adrianjagielak.intellijdbc.documentation.DbcDocumentationProvider"/>
 
+        <!-- Signal Info Hints (comments + value descriptions at end of signal lines) -->
+        <editor.linePainter
+                implementation="com.github.adrianjagielak.intellijdbc.highlighting.DbcSignalInfoPainter"/>
+
         <!-- Live Templates -->
         <defaultLiveTemplates file="/liveTemplates/Dbc.xml"/>
         <liveTemplateContext

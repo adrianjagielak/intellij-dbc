@@ -72,7 +72,13 @@ class DbcSyntaxHighlighter : SyntaxHighlighterBase() {
             DbcTokenTypes.SGTYPE_, DbcTokenTypes.SIG_TYPE_REF_,
             DbcTokenTypes.BA_REL_, DbcTokenTypes.BA_DEF_REL_,
             DbcTokenTypes.BA_SGTYPE_, DbcTokenTypes.SIG_VALTYPE_,
-            DbcTokenTypes.ENVVAR_DATA_, DbcTokenTypes.SGTYPE_VAL_ -> SECTION_KEYWORD_KEYS
+            DbcTokenTypes.ENVVAR_DATA_, DbcTokenTypes.SGTYPE_VAL_,
+            DbcTokenTypes.NS_DESC_, DbcTokenTypes.CAT_DEF_, DbcTokenTypes.CAT_,
+            DbcTokenTypes.FILTER, DbcTokenTypes.EV_DATA_,
+            DbcTokenTypes.SIGTYPE_VALTYPE_, DbcTokenTypes.BA_DEF_DEF_REL_,
+            DbcTokenTypes.BA_DEF_SGTYPE_, DbcTokenTypes.BA_SGTYPE_REL_,
+            DbcTokenTypes.BU_SG_REL_, DbcTokenTypes.BU_EV_REL_,
+            DbcTokenTypes.BU_BO_REL_ -> SECTION_KEYWORD_KEYS
 
             DbcTokenTypes.SG_ -> KEYWORD_KEYS
 

@@ -46,6 +46,13 @@ class DbcParser : PsiParser {
             DbcTokenTypes.SIG_TYPE_REF_ -> parseGenericUntilSemicolon(builder, DbcElementTypes.SIGNAL_TYPE_REF_DEF)
             DbcTokenTypes.SIG_VALTYPE_ -> parseSignalValtype(builder)
             DbcTokenTypes.ENVVAR_DATA_ -> parseGenericUntilSemicolon(builder, DbcElementTypes.ENVIRONMENT_VARIABLE_DATA_DEF)
+            // Less common keywords — parse generically until semicolon
+            DbcTokenTypes.NS_DESC_, DbcTokenTypes.CAT_DEF_, DbcTokenTypes.CAT_,
+            DbcTokenTypes.FILTER, DbcTokenTypes.EV_DATA_,
+            DbcTokenTypes.SIGTYPE_VALTYPE_, DbcTokenTypes.BA_DEF_DEF_REL_,
+            DbcTokenTypes.BA_DEF_SGTYPE_, DbcTokenTypes.BA_SGTYPE_REL_,
+            DbcTokenTypes.BU_SG_REL_, DbcTokenTypes.BU_EV_REL_,
+            DbcTokenTypes.BU_BO_REL_ -> parseGenericUntilSemicolon(builder, DbcElementTypes.SIGNAL_GROUP_SIGNAL_TYPE_DEF)
             else -> {
                 // Skip unrecognized tokens
                 builder.advanceLexer()
@@ -70,10 +77,20 @@ class DbcParser : PsiParser {
             builder.advanceLexer()
         }
         skipWhitespace(builder)
-        // Read symbol identifiers until we hit a known keyword at top level
-        while (!builder.eof() && builder.tokenType == DbcTokenTypes.IDENTIFIER) {
-            builder.advanceLexer()
-            skipWhitespace(builder)
+        // Read symbol names — these are identifiers OR keyword tokens (CM_, BA_DEF_, etc.)
+        // since the NS_ section lists names that match DBC keywords.
+        // Stop when we see a keyword followed by ':' (next section like BS_:)
+        while (!builder.eof()) {
+            val tokenType = builder.tokenType
+            if (tokenType == DbcTokenTypes.IDENTIFIER || DbcTokenTypes.KEYWORDS.contains(tokenType)) {
+                // Peek ahead: if the next non-whitespace token is COLON, this is a new section header
+                val lookAhead = builder.lookAhead(1)
+                if (lookAhead == DbcTokenTypes.COLON) break
+                builder.advanceLexer()
+                skipWhitespace(builder)
+            } else {
+                break
+            }
         }
         marker.done(DbcElementTypes.NEW_SYMBOLS_DEF)
     }
