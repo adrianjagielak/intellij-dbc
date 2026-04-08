@@ -5,10 +5,13 @@ import com.github.adrianjagielak.intellijdbc.psi.*
 import com.intellij.openapi.editor.EditorLinePainter
 import com.intellij.openapi.editor.LineExtensionInfo
 import com.intellij.openapi.editor.colors.EditorColorsManager
-import com.intellij.openapi.editor.markup.TextAttributes
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
+import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.psi.util.PsiTreeUtil
 import java.awt.Color
 import java.awt.Font
@@ -30,21 +33,24 @@ class DbcSignalInfoPainter : EditorLinePainter() {
         val lineStartOffset = document.getLineStartOffset(lineNumber)
         val lineEndOffset = document.getLineEndOffset(lineNumber)
 
+        // Quick check: signal lines start with whitespace + "SG_"
+        val lineText = document.charsSequence.subSequence(lineStartOffset, lineEndOffset)
+        if (!lineText.contains("SG_")) return null
+
         // Find signal definition on this line
-        var offset = lineStartOffset
+        val element = psiFile.findElementAt(lineStartOffset) ?: return null
         var signalDef: DbcSignalDef? = null
-        while (offset < lineEndOffset) {
-            val element = psiFile.findElementAt(offset)
-            if (element != null) {
-                val signal = PsiTreeUtil.getParentOfType(element, DbcSignalDef::class.java)
-                if (signal != null && signal.textRange.startOffset >= lineStartOffset) {
-                    signalDef = signal
-                    break
-                }
-                offset = element.textRange.endOffset
-            } else {
-                offset++
+        // Walk from line start to find the signal PSI element
+        var current = element
+        while (current != null && current.textRange.startOffset < lineEndOffset) {
+            val signal = PsiTreeUtil.getParentOfType(current, DbcSignalDef::class.java)
+            if (signal != null && signal.textRange.startOffset >= lineStartOffset) {
+                signalDef = signal
+                break
             }
+            val next = PsiTreeUtil.nextLeaf(current)
+            if (next == null || next.textRange.startOffset >= lineEndOffset) break
+            current = next
         }
 
         if (signalDef == null) return null
@@ -53,19 +59,22 @@ class DbcSignalInfoPainter : EditorLinePainter() {
         val parentMessage = signalDef.parent as? DbcMessageDef ?: return null
         val messageId = parentMessage.messageId ?: return null
 
+        // Use cached lookup maps (rebuilt only when file changes)
+        val cache = getOrBuildCache(psiFile)
+
         val parts = mutableListOf<String>()
 
-        // Look up comment for this signal
-        val comment = findSignalComment(psiFile, messageId, signalName)
+        // Look up comment
+        val key = "$messageId:$signalName"
+        val comment = cache.signalComments[key]
         if (comment != null) {
-            // Truncate long comments
             val truncated = if (comment.length > 80) comment.substring(0, 77) + "..." else comment
             parts.add(truncated)
         }
 
         // Look up value descriptions
-        val valueDescs = findSignalValueDescriptions(psiFile, messageId, signalName)
-        if (valueDescs.isNotEmpty()) {
+        val valueDescs = cache.signalValues[key]
+        if (valueDescs != null && valueDescs.isNotEmpty()) {
             val valStr = valueDescs.joinToString(", ") { "${it.first}=\"${it.second}\"" }
             val truncated = if (valStr.length > 100) valStr.substring(0, 97) + "..." else valStr
             parts.add(truncated)
@@ -87,19 +96,44 @@ class DbcSignalInfoPainter : EditorLinePainter() {
         return commentAttrs?.foregroundColor ?: Color(128, 128, 128)
     }
 
-    private fun findSignalComment(psiFile: com.intellij.psi.PsiFile, messageId: Long, signalName: String): String? {
-        val comments = PsiTreeUtil.findChildrenOfType(psiFile, DbcCommentDef::class.java)
-        return comments.find { it.commentType == "SG_" && it.targetId == messageId && it.targetName == signalName }
-            ?.commentText
+    private fun getOrBuildCache(psiFile: PsiFile): SignalInfoCache {
+        return CachedValuesManager.getCachedValue(psiFile) {
+            CachedValueProvider.Result.create(
+                buildCache(psiFile),
+                PsiModificationTracker.MODIFICATION_COUNT
+            )
+        }
     }
 
-    private fun findSignalValueDescriptions(
-        psiFile: com.intellij.psi.PsiFile,
-        messageId: Long,
-        signalName: String
-    ): List<Pair<Long, String>> {
-        val valDescs = PsiTreeUtil.findChildrenOfType(psiFile, DbcValueDescriptionDef::class.java)
-        return valDescs.find { it.messageId == messageId && it.signalName == signalName }
-            ?.entries ?: emptyList()
+    private fun buildCache(psiFile: PsiFile): SignalInfoCache {
+        val signalComments = mutableMapOf<String, String>()
+        val signalValues = mutableMapOf<String, List<Pair<Long, String>>>()
+
+        // Single pass: collect all signal comments
+        PsiTreeUtil.findChildrenOfType(psiFile, DbcCommentDef::class.java).forEach { cm ->
+            if (cm.commentType == "SG_") {
+                val id = cm.targetId ?: return@forEach
+                val name = cm.targetName ?: return@forEach
+                val text = cm.commentText ?: return@forEach
+                signalComments["$id:$name"] = text
+            }
+        }
+
+        // Single pass: collect all value descriptions
+        PsiTreeUtil.findChildrenOfType(psiFile, DbcValueDescriptionDef::class.java).forEach { vd ->
+            val id = vd.messageId ?: return@forEach
+            val name = vd.signalName ?: return@forEach
+            val entries = vd.entries
+            if (entries.isNotEmpty()) {
+                signalValues["$id:$name"] = entries
+            }
+        }
+
+        return SignalInfoCache(signalComments, signalValues)
     }
+
+    private data class SignalInfoCache(
+        val signalComments: Map<String, String>,
+        val signalValues: Map<String, List<Pair<Long, String>>>
+    )
 }
