@@ -14,15 +14,9 @@ repositories {
     }
 }
 
-kotlin {
-    jvmToolchain(21)
-}
-
 dependencies {
     intellijPlatform {
         intellijIdeaCommunity(providers.gradleProperty("platformVersion").get())
-        pluginVerifier()
-        zipSigner()
     }
 }
 
@@ -33,6 +27,9 @@ tasks {
     }
     compileKotlin {
         kotlinOptions.jvmTarget = "17"
+    }
+    wrapper {
+        gradleVersion = "8.10"
     }
 }
 
@@ -49,17 +46,5 @@ intellijPlatform {
             name = "Adrian Jagielak"
             url = "https://github.com/adrianjagielak"
         }
-    }
-
-    pluginVerification {
-        ides {
-            recommended()
-        }
-    }
-}
-
-tasks {
-    wrapper {
-        gradleVersion = "8.10"
     }
 }
