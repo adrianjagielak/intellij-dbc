@@ -1,0 +1,130 @@
+VERSION "1.0"
+
+NS_ :
+	NS_DESC_
+	CM_
+	BA_DEF_
+	BA_
+	VAL_
+	CAT_DEF_
+	CAT_
+	FILTER
+	BA_DEF_DEF_
+	EV_DATA_
+	ENVVAR_DATA_
+	SGTYPE_
+	SGTYPE_VAL_
+	BA_DEF_SGTYPE_
+	BA_SGTYPE_
+	SIG_TYPE_REF_
+	VAL_TABLE_
+	SIG_GROUP_
+	SIG_VALTYPE_
+	SIGTYPE_VALTYPE_
+	BO_TX_BU_
+	BA_REL_
+	BA_DEF_REL_
+	BA_SGTYPE_REL_
+	SG_MUL_VAL_
+
+BS_:
+
+BU_: Engine Transmission Dashboard ABS
+
+VAL_TABLE_ GearPositions 0 "Park" 1 "Reverse" 2 "Neutral" 3 "Drive" 4 "Sport" 5 "Low" ;
+
+BO_ 100 EngineData: 8 Engine
+ SG_ EngineSpeed : 0|16@1+ (0.1,0) [0|8000] "rpm" Dashboard,Transmission
+ SG_ EngineTemp : 16|8@1+ (1,-40) [-40|215] "degC" Dashboard
+ SG_ ThrottlePos : 24|8@1+ (0.392157,0) [0|100] "%" Dashboard
+ SG_ IdleRunning : 32|1@1+ (1,0) [0|1] "" Dashboard
+ SG_ EngineStatus : 33|3@1+ (1,0) [0|7] "" Dashboard
+
+BO_ 200 TransmissionData: 4 Transmission
+ SG_ CurrentGear : 0|4@1+ (1,0) [0|8] "" Dashboard,Engine
+ SG_ GearRequest M : 4|4@1+ (1,0) [0|8] "" Engine
+ SG_ GearLockout m0 : 8|1@1+ (1,0) [0|1] "" Dashboard
+ SG_ GearRatio m1 : 8|16@1+ (0.001,0) [0|10] "" Dashboard
+
+BO_ 300 ABSData: 6 ABS
+ SG_ WheelSpeed_FL : 0|12@1+ (0.05,0) [0|200] "km/h" Dashboard,Engine
+ SG_ WheelSpeed_FR : 12|12@1+ (0.05,0) [0|200] "km/h" Dashboard,Engine
+ SG_ WheelSpeed_RL : 24|12@1+ (0.05,0) [0|200] "km/h" Dashboard,Engine
+ SG_ WheelSpeed_RR : 36|12@1+ (0.05,0) [0|200] "km/h" Dashboard,Engine
+
+BO_ 400 DashboardCmd: 2 Dashboard
+ SG_ WarningLight : 0|8@1+ (1,0) [0|255] "" Engine,Transmission,ABS
+ SG_ BuzzerCmd : 8|4@1+ (1,0) [0|15] "" Engine
+
+BO_ 2024 DiagRequest: 8 Dashboard
+ SG_ DiagService : 0|8@1+ (1,0) [0|255] "" Engine,Transmission,ABS
+ SG_ DiagSubFunc : 8|8@1+ (1,0) [0|255] "" Engine,Transmission,ABS
+ SG_ DiagData : 16|48@1+ (1,0) [0|0] "" Engine,Transmission,ABS
+
+// Extended frame example (bit 31 set for extended frame)
+BO_ 2147483748 J1939_EngineData: 8 Engine
+ SG_ J1939_RPM : 0|16@1+ (0.125,0) [0|8031.875] "rpm" Dashboard
+
+CM_ "Example CAN database for vehicle powertrain";
+CM_ BU_ Engine "Main engine control unit - manages fuel injection, ignition, and emissions";
+CM_ BU_ Transmission "Automatic transmission controller - manages gear shifting";
+CM_ BU_ Dashboard "Instrument cluster and driver information display";
+CM_ BU_ ABS "Anti-lock braking system controller";
+CM_ BO_ 100 "Periodic engine sensor data broadcast at 10ms";
+CM_ BO_ 200 "Transmission status and gear information at 20ms";
+CM_ BO_ 300 "ABS wheel speed data broadcast at 10ms";
+CM_ BO_ 400 "Dashboard command message at 100ms";
+CM_ SG_ 100 EngineSpeed "Engine crankshaft speed measured by the crank sensor";
+CM_ SG_ 100 EngineTemp "Coolant temperature from the engine block sensor";
+CM_ SG_ 100 ThrottlePos "Electronic throttle body position percentage";
+CM_ SG_ 200 CurrentGear "Currently engaged gear position";
+CM_ SG_ 200 GearRequest "Gear shift request - multiplexer switch";
+CM_ SG_ 300 WheelSpeed_FL "Front left wheel speed from ABS sensor";
+
+BA_DEF_ BO_ "GenMsgCycleTime" INT 0 10000;
+BA_DEF_ BO_ "GenMsgSendType" STRING;
+BA_DEF_ SG_ "GenSigStartValue" FLOAT 0 100000;
+BA_DEF_ BU_ "NodeLayerModules" STRING;
+BA_DEF_ BU_ "ECU" STRING;
+BA_DEF_ "BusType" STRING;
+BA_DEF_ BO_ "DiagState" ENUM "Default","Extended","Programming";
+BA_DEF_ SG_ "SystemSignalLongSymbol" STRING;
+
+BA_DEF_DEF_ "GenMsgCycleTime" 100;
+BA_DEF_DEF_ "GenMsgSendType" "Cyclic";
+BA_DEF_DEF_ "GenSigStartValue" 0;
+BA_DEF_DEF_ "NodeLayerModules" "";
+BA_DEF_DEF_ "ECU" "";
+BA_DEF_DEF_ "BusType" "CAN";
+BA_DEF_DEF_ "DiagState" "Default";
+BA_DEF_DEF_ "SystemSignalLongSymbol" "";
+
+BA_ "BusType" "CAN";
+BA_ "GenMsgCycleTime" BO_ 100 10;
+BA_ "GenMsgCycleTime" BO_ 200 20;
+BA_ "GenMsgCycleTime" BO_ 300 10;
+BA_ "GenMsgCycleTime" BO_ 400 100;
+BA_ "GenMsgSendType" BO_ 100 "Cyclic";
+BA_ "GenMsgSendType" BO_ 2024 "Event";
+BA_ "ECU" BU_ Engine "ECU_Engine_V2.1";
+BA_ "ECU" BU_ Transmission "TCU_V1.5";
+BA_ "GenSigStartValue" SG_ 100 EngineTemp 40;
+BA_ "DiagState" BO_ 2024 "Extended";
+
+VAL_ 100 EngineStatus 0 "Stopped" 1 "Cranking" 2 "Running" 3 "Overheating" 4 "Error" ;
+VAL_ 100 IdleRunning 0 "Not Idle" 1 "Idle" ;
+VAL_ 200 CurrentGear 0 "Park" 1 "Reverse" 2 "Neutral" 3 "1st" 4 "2nd" 5 "3rd" 6 "4th" 7 "5th" 8 "6th" ;
+VAL_ 400 WarningLight 0 "Off" 1 "Check Engine" 2 "Oil Pressure" 4 "Battery" 8 "Temp High" 16 "ABS Warning" ;
+
+SIG_GROUP_ 100 EnginePerformance 1 : EngineSpeed ThrottlePos ;
+SIG_GROUP_ 300 WheelSpeeds 1 : WheelSpeed_FL WheelSpeed_FR WheelSpeed_RL WheelSpeed_RR ;
+
+BO_TX_BU_ 100 : Engine;
+BO_TX_BU_ 200 : Transmission;
+BO_TX_BU_ 300 : ABS;
+
+SIG_VALTYPE_ 100 EngineSpeed : 1;
+SIG_VALTYPE_ 100 EngineTemp : 1;
+
+SG_MUL_VAL_ 200 GearLockout GearRequest 0-0;
+SG_MUL_VAL_ 200 GearRatio GearRequest 1-8;

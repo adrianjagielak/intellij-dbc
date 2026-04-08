@@ -1,0 +1,164 @@
+<idea-plugin>
+    <id>com.github.adrianjagielak.intellijdbc</id>
+    <name>DBC Support</name>
+    <vendor email="adrianjagielak@gmail.com" url="https://github.com/adrianjagielak">Adrian Jagielak</vendor>
+
+    <description><![CDATA[
+        <h2>DBC (CAN Database) File Support</h2>
+        <p>Full-featured language support for <b>.dbc</b> files — the industry-standard CAN bus database format used in automotive and embedded systems.</p>
+
+        <h3>Features</h3>
+        <ul>
+            <li><b>Syntax Highlighting</b> — Rich, customizable highlighting for keywords, message IDs, signal names, strings, numbers, comments, and more</li>
+            <li><b>Parser</b> — Full DBC grammar parser supporting all standard constructs: VERSION, NS_, BS_, BU_, BO_, SG_, CM_, BA_DEF_, BA_, VAL_, VAL_TABLE_, SIG_GROUP_, BO_TX_BU_, EV_, SG_MUL_VAL_, and more</li>
+            <li><b>Structure View</b> — Hierarchical tree showing nodes, messages with their signals, value tables, and environment variables</li>
+            <li><b>Go to Symbol</b> — Navigate to any message, signal, node, or value table by name (Ctrl+Alt+Shift+N)</li>
+            <li><b>Find Usages</b> — Find all references to nodes, messages, and signals throughout DBC files</li>
+            <li><b>Code Completion</b> — Smart completion for keywords, node names, signal names, message names, and attribute names</li>
+            <li><b>Quick Documentation</b> — Hover documentation showing message layout, signal properties (bit position, range, factor/offset, physical formula), value descriptions, and node communication matrix</li>
+            <li><b>Code Folding</b> — Collapse message definitions, comment blocks, and attribute sections</li>
+            <li><b>Inspections</b> — Detect duplicate message IDs, duplicate signal names, signal overflow beyond DLC, overlapping signals, and undefined node references</li>
+            <li><b>Reference Resolution</b> — Navigate from transmitter/receiver nodes to their BU_ definitions</li>
+            <li><b>Line Markers</b> — Gutter icons for messages, signals, and nodes</li>
+            <li><b>Commenter</b> — Toggle line comments with Ctrl+/</li>
+            <li><b>Brace Matching</b> — Matching parentheses and brackets</li>
+            <li><b>Live Templates</b> — Predefined snippets: <code>bo</code> (message), <code>sg</code> (signal), <code>cm</code> (comment), <code>val</code> (values), <code>badef</code> (attribute), <code>dbcfile</code> (file skeleton)</li>
+            <li><b>Custom File Icon</b> — Distinct icon for .dbc files in the project tree</li>
+        </ul>
+
+        <h3>About DBC Files</h3>
+        <p>DBC files define CAN (Controller Area Network) bus communication databases. They are used extensively in automotive ECU development for describing messages, signals, nodes, and their relationships. The format was created by Vector Informatik for use with CANdb++ and is the de facto standard in the automotive industry.</p>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Language & File Type -->
+        <fileType
+                name="DBC"
+                implementationClass="com.github.adrianjagielak.intellijdbc.DbcFileType"
+                fieldName="INSTANCE"
+                language="DBC"
+                extensions="dbc"/>
+
+        <!-- Parser -->
+        <lang.parserDefinition
+                language="DBC"
+                implementationClass="com.github.adrianjagielak.intellijdbc.parser.DbcParserDefinition"/>
+
+        <!-- Syntax Highlighting -->
+        <lang.syntaxHighlighterFactory
+                language="DBC"
+                implementationClass="com.github.adrianjagielak.intellijdbc.highlighting.DbcSyntaxHighlighterFactory"/>
+
+        <!-- Color Settings -->
+        <colorSettingsPage
+                implementation="com.github.adrianjagielak.intellijdbc.highlighting.DbcColorSettingsPage"/>
+
+        <!-- Annotator (semantic highlighting) -->
+        <annotator
+                language="DBC"
+                implementationClass="com.github.adrianjagielak.intellijdbc.highlighting.DbcAnnotator"/>
+
+        <!-- Structure View -->
+        <lang.psiStructureViewFactory
+                language="DBC"
+                implementationClass="com.github.adrianjagielak.intellijdbc.structure.DbcStructureViewFactory"/>
+
+        <!-- Code Folding -->
+        <lang.foldingBuilder
+                language="DBC"
+                implementationClass="com.github.adrianjagielak.intellijdbc.folding.DbcFoldingBuilder"/>
+
+        <!-- Commenter -->
+        <lang.commenter
+                language="DBC"
+                implementationClass="com.github.adrianjagielak.intellijdbc.commenter.DbcCommenter"/>
+
+        <!-- Brace Matching -->
+        <lang.braceMatcher
+                language="DBC"
+                implementationClass="com.github.adrianjagielak.intellijdbc.DbcBraceMatcher"/>
+
+        <!-- Line Markers -->
+        <codeInsight.lineMarkerProvider
+                language="DBC"
+                implementationClass="com.github.adrianjagielak.intellijdbc.navigation.DbcLineMarkerProvider"/>
+
+        <!-- Go to Symbol -->
+        <gotoSymbolContributor
+                implementation="com.github.adrianjagielak.intellijdbc.navigation.DbcChooseByNameContributor"/>
+
+        <!-- Find Usages -->
+        <lang.findUsagesProvider
+                language="DBC"
+                implementationClass="com.github.adrianjagielak.intellijdbc.reference.DbcFindUsagesProvider"/>
+
+        <!-- References -->
+        <psi.referenceContributor
+                language="DBC"
+                implementation="com.github.adrianjagielak.intellijdbc.reference.DbcReferenceContributor"/>
+
+        <!-- Code Completion -->
+        <completion.contributor
+                language="DBC"
+                implementationClass="com.github.adrianjagielak.intellijdbc.completion.DbcCompletionContributor"/>
+
+        <!-- Documentation -->
+        <lang.documentationProvider
+                language="DBC"
+                implementationClass="com.github.adrianjagielak.intellijdbc.documentation.DbcDocumentationProvider"/>
+
+        <!-- Live Templates -->
+        <defaultLiveTemplates file="/liveTemplates/Dbc.xml"/>
+        <liveTemplateContext
+                implementation="com.github.adrianjagielak.intellijdbc.DbcLiveTemplateContext"/>
+
+        <!-- Inspections -->
+        <localInspection
+                language="DBC"
+                groupName="DBC"
+                displayName="Duplicate message ID"
+                shortName="DbcDuplicateMessageId"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="com.github.adrianjagielak.intellijdbc.inspection.DbcDuplicateMessageIdInspection"/>
+
+        <localInspection
+                language="DBC"
+                groupName="DBC"
+                displayName="Signal exceeds message length"
+                shortName="DbcSignalOverflow"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="com.github.adrianjagielak.intellijdbc.inspection.DbcSignalOverflowInspection"/>
+
+        <localInspection
+                language="DBC"
+                groupName="DBC"
+                displayName="Undefined node reference"
+                shortName="DbcUndefinedNode"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="com.github.adrianjagielak.intellijdbc.inspection.DbcUndefinedNodeInspection"/>
+
+        <localInspection
+                language="DBC"
+                groupName="DBC"
+                displayName="Duplicate signal name in message"
+                shortName="DbcDuplicateSignalName"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="com.github.adrianjagielak.intellijdbc.inspection.DbcDuplicateSignalNameInspection"/>
+
+        <localInspection
+                language="DBC"
+                groupName="DBC"
+                displayName="Overlapping signals"
+                shortName="DbcSignalOverlap"
+                enabledByDefault="true"
+                level="WARNING"
+                implementationClass="com.github.adrianjagielak.intellijdbc.inspection.DbcSignalOverlapInspection"/>
+    </extensions>
+</idea-plugin>

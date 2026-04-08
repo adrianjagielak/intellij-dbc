@@ -1,0 +1,68 @@
+<templateSet group="DBC">
+  <template name="bo" value="BO_ $ID$ $NAME$: $DLC$ $TRANSMITTER$&#10; SG_ $SIGNAL$ : $STARTBIT$|$BITLEN$@1+ (1,0) [0|0] &quot;&quot; Vector__XXX&#10;&#10;" description="Message definition with signal" toReformat="false" toShortenFQNames="false">
+    <variable name="ID" expression="" defaultValue="&quot;100&quot;" alwaysStopAt="true" />
+    <variable name="NAME" expression="" defaultValue="&quot;MessageName&quot;" alwaysStopAt="true" />
+    <variable name="DLC" expression="" defaultValue="&quot;8&quot;" alwaysStopAt="true" />
+    <variable name="TRANSMITTER" expression="" defaultValue="&quot;Vector__XXX&quot;" alwaysStopAt="true" />
+    <variable name="SIGNAL" expression="" defaultValue="&quot;SignalName&quot;" alwaysStopAt="true" />
+    <variable name="STARTBIT" expression="" defaultValue="&quot;0&quot;" alwaysStopAt="true" />
+    <variable name="BITLEN" expression="" defaultValue="&quot;8&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="DBC" value="true" />
+    </context>
+  </template>
+
+  <template name="sg" value="SG_ $NAME$ : $STARTBIT$|$BITLEN$@$BYTEORDER$$VALUETYPE$ ($FACTOR$,$OFFSET$) [$MIN$|$MAX$] &quot;$UNIT$&quot; $RECEIVERS$" description="Signal definition" toReformat="false" toShortenFQNames="false">
+    <variable name="NAME" expression="" defaultValue="&quot;SignalName&quot;" alwaysStopAt="true" />
+    <variable name="STARTBIT" expression="" defaultValue="&quot;0&quot;" alwaysStopAt="true" />
+    <variable name="BITLEN" expression="" defaultValue="&quot;8&quot;" alwaysStopAt="true" />
+    <variable name="BYTEORDER" expression="" defaultValue="&quot;1&quot;" alwaysStopAt="true" />
+    <variable name="VALUETYPE" expression="" defaultValue="&quot;+&quot;" alwaysStopAt="true" />
+    <variable name="FACTOR" expression="" defaultValue="&quot;1&quot;" alwaysStopAt="true" />
+    <variable name="OFFSET" expression="" defaultValue="&quot;0&quot;" alwaysStopAt="true" />
+    <variable name="MIN" expression="" defaultValue="&quot;0&quot;" alwaysStopAt="true" />
+    <variable name="MAX" expression="" defaultValue="&quot;0&quot;" alwaysStopAt="true" />
+    <variable name="UNIT" expression="" defaultValue="&quot;&quot;" alwaysStopAt="true" />
+    <variable name="RECEIVERS" expression="" defaultValue="&quot;Vector__XXX&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="DBC" value="true" />
+    </context>
+  </template>
+
+  <template name="cm" value="CM_ $TYPE$ $TARGET$ &quot;$COMMENT$&quot;;" description="Comment definition" toReformat="false" toShortenFQNames="false">
+    <variable name="TYPE" expression="" defaultValue="&quot;BO_&quot;" alwaysStopAt="true" />
+    <variable name="TARGET" expression="" defaultValue="&quot;100&quot;" alwaysStopAt="true" />
+    <variable name="COMMENT" expression="" defaultValue="&quot;Description&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="DBC" value="true" />
+    </context>
+  </template>
+
+  <template name="val" value="VAL_ $MSGID$ $SIGNAL$ $VALUES$ ;" description="Value descriptions" toReformat="false" toShortenFQNames="false">
+    <variable name="MSGID" expression="" defaultValue="&quot;100&quot;" alwaysStopAt="true" />
+    <variable name="SIGNAL" expression="" defaultValue="&quot;SignalName&quot;" alwaysStopAt="true" />
+    <variable name="VALUES" expression="" defaultValue="&quot;0 \&quot;Off\&quot; 1 \&quot;On\&quot;&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="DBC" value="true" />
+    </context>
+  </template>
+
+  <template name="badef" value="BA_DEF_ $TYPE$ &quot;$NAME$&quot; $VALUETYPE$ $MIN$ $MAX$;" description="Attribute definition" toReformat="false" toShortenFQNames="false">
+    <variable name="TYPE" expression="" defaultValue="&quot;BO_&quot;" alwaysStopAt="true" />
+    <variable name="NAME" expression="" defaultValue="&quot;AttributeName&quot;" alwaysStopAt="true" />
+    <variable name="VALUETYPE" expression="" defaultValue="&quot;INT&quot;" alwaysStopAt="true" />
+    <variable name="MIN" expression="" defaultValue="&quot;0&quot;" alwaysStopAt="true" />
+    <variable name="MAX" expression="" defaultValue="&quot;100&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="DBC" value="true" />
+    </context>
+  </template>
+
+  <template name="dbcfile" value="VERSION &quot;$VERSION$&quot;&#10;&#10;NS_ :&#10;&#10;BS_:&#10;&#10;BU_: $NODES$&#10;&#10;&#10;" description="DBC file skeleton" toReformat="false" toShortenFQNames="false">
+    <variable name="VERSION" expression="" defaultValue="&quot;&quot;" alwaysStopAt="true" />
+    <variable name="NODES" expression="" defaultValue="&quot;ECU1&quot;" alwaysStopAt="true" />
+    <context>
+      <option name="DBC" value="true" />
+    </context>
+  </template>
+</templateSet>
