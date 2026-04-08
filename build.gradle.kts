@@ -29,7 +29,7 @@ tasks {
         kotlinOptions.jvmTarget = "17"
     }
     wrapper {
-        gradleVersion = "8.10"
+        gradleVersion = "8.14"
     }
 }
 
