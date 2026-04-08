@@ -61,28 +61,34 @@ class DbcSignalInfoPainter : EditorLinePainter() {
 
         // Use cached lookup maps (rebuilt only when file changes)
         val cache = getOrBuildCache(psiFile)
-
-        val parts = mutableListOf<String>()
-
-        // Look up comment
         val key = "$messageId:$signalName"
+
         val comment = cache.signalComments[key]
-        if (comment != null) {
-            val truncated = if (comment.length > 80) comment.substring(0, 77) + "..." else comment
-            parts.add(truncated)
-        }
-
-        // Look up value descriptions
         val valueDescs = cache.signalValues[key]
-        if (valueDescs != null && valueDescs.isNotEmpty()) {
-            val valStr = valueDescs.joinToString(", ") { "${it.first}=\"${it.second}\"" }
-            val truncated = if (valStr.length > 100) valStr.substring(0, 97) + "..." else valStr
-            parts.add(truncated)
+
+        if (comment == null && (valueDescs == null || valueDescs.isEmpty())) return null
+
+        val sb = StringBuilder("  //")
+
+        // Comment first
+        if (comment != null) {
+            val singleLine = comment.replace('\n', ' ').replace("  ", " ").trim()
+            val truncated = if (singleLine.length > 60) singleLine.substring(0, 57) + "..." else singleLine
+            sb.append(" ").append(truncated)
         }
 
-        if (parts.isEmpty()) return null
+        // Values: show as {IDLE, PREPARE, ENCRYPT_BEGIN, ...} — names only, no numeric keys
+        if (valueDescs != null && valueDescs.isNotEmpty()) {
+            if (comment != null) sb.append("  ")
+            sb.append("{")
+            val maxShow = 5
+            val names = valueDescs.map { it.second }
+            sb.append(names.take(maxShow).joinToString(", "))
+            if (names.size > maxShow) sb.append(", ...")
+            sb.append("}")
+        }
 
-        val text = "  // " + parts.joinToString(" | ")
+        val text = sb.toString()
         val color = getHintColor()
 
         return listOf(LineExtensionInfo(text, color, null, null, Font.ITALIC))
